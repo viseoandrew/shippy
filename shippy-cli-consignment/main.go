@@ -1,10 +1,12 @@
 package main
 
 import (
-	"context"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"os"
+
+	"context"
 
 	pb "github.com/viseoandrew/shippy/shippy-service-consignment/proto/consignment"
 	"google.golang.org/grpc"
@@ -21,12 +23,11 @@ func parseFile(file string) (*pb.Consignment, error) {
 	if err != nil {
 		return nil, err
 	}
-	json.Unmarshall(data, &consignment)
+	json.Unmarshal(data, &consignment)
 	return consignment, err
 }
 
 func main() {
-
 	//Setup a Connection to grpc Server
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
@@ -38,10 +39,11 @@ func main() {
 	//Contact Server and print response
 	file := defaultFilename
 	if len(os.Args) > 1 {
-		file := Args[1]
+		file = os.Args[1]
 	}
 
 	consignment, err := parseFile(file)
+
 	if err != nil {
 		log.Fatalf("Could not parse file: %v", err)
 	}
